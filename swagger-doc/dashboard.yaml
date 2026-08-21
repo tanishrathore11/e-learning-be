@@ -1,0 +1,95 @@
+paths:
+  /dashboard/instructor:
+    get:
+      tags:
+        - Dashboard
+      summary: Get instructor dashboard
+      description: Returns dashboard data for the authenticated instructor (userId from JWT). Includes courses, enrolled students, and completion percentages.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Instructor dashboard data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      totalCourses:
+                        type: integer
+                      totalStudents:
+                        type: integer
+                      courses:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            courseName:
+                              type: string
+                            students:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  name:
+                                    type: string
+                                  completionPercentage:
+                                    type: integer
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden — INSTRUCTOR or ADMIN only
+
+  /dashboard/student:
+    get:
+      tags:
+        - Dashboard
+      summary: Get student dashboard
+      description: Returns enrolled courses and completion progress for the authenticated student (userId from JWT).
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Student dashboard data
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden — STUDENT only
+
+  /dashboard/progress:
+    post:
+      tags:
+        - Dashboard
+      summary: Mark a lesson as completed
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - enrollmentId
+                - lessonId
+              properties:
+                enrollmentId:
+                  type: string
+                  format: uuid
+                lessonId:
+                  type: string
+                  format: uuid
+      responses:
+        "201":
+          description: Progress recorded
+        "400":
+          description: Validation error
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden — STUDENT only

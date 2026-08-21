@@ -1,0 +1,125 @@
+paths:
+  /lessons:
+    post:
+      tags:
+        - Lessons
+      summary: Add a lesson to a course
+      description: Only the course creator (instructor) or an ADMIN can add lessons to the course.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - courseId
+                - title
+                - type
+              properties:
+                courseId:
+                  type: string
+                  format: uuid
+                title:
+                  type: string
+                  example: Introduction to Node.js
+                type:
+                  type: string
+                  enum: [VIDEO, NOTES]
+                content:
+                  type: string
+                  nullable: true
+                videoUrl:
+                  type: string
+                  format: uri
+                  nullable: true
+                position:
+                  type: integer
+                  nullable: true
+                  example: 1
+      responses:
+        "201":
+          description: Lesson created
+        "400":
+          description: Validation error
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden — only course creator or ADMIN can add lessons
+        "404":
+          description: Course not found
+
+  /lessons/{id}:
+
+    patch:
+      tags:
+        - Lessons
+      summary: Update a lesson
+      description: Only the course creator (instructor) or an ADMIN can update lessons of the course.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                type:
+                  type: string
+                  enum: [VIDEO, NOTES]
+                content:
+                  type: string
+                  nullable: true
+                videoUrl:
+                  type: string
+                  format: uri
+                  nullable: true
+                position:
+                  type: integer
+                  nullable: true
+      responses:
+        "200":
+          description: Lesson updated
+        "400":
+          description: Validation error
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden — only course creator or ADMIN can update lessons
+        "404":
+          description: Lesson not found
+
+    delete:
+      tags:
+        - Lessons
+      summary: Delete a lesson
+      description: Only the course creator (instructor) or an ADMIN can delete lessons from the course.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Lesson deleted
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden — only course creator or ADMIN can delete lessons
+        "404":
+          description: Lesson not found

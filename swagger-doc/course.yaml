@@ -1,0 +1,152 @@
+paths:
+  /courses:
+    post:
+      tags:
+        - Courses
+      summary: Create a new course
+      description: The instructorId is automatically set from the JWT — do not send it in the body.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - topicId
+                - price
+              properties:
+                title:
+                  type: string
+                  example: Node.js Masterclass
+                description:
+                  type: string
+                  nullable: true
+                  example: Build scalable REST APIs
+                topicId:
+                  type: string
+                  format: uuid
+                price:
+                  type: number
+                  minimum: 0
+                  example: 49.99
+      responses:
+        "201":
+          description: Course created
+        "400":
+          description: Validation error
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden — ADMIN or INSTRUCTOR only
+        "404":
+          description: Topic or instructor not found
+
+    get:
+      tags:
+        - Courses
+      summary: Get all courses
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: List of courses
+        "401":
+          description: Not authenticated
+
+  /courses/{id}:
+    get:
+      tags:
+        - Courses
+      summary: Get course details
+      description: Returns full course details including lessons with their completion status (`isCompleted`). Accessible only to enrolled students, the course creator (instructor), or an ADMIN.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Course found with lesson completion status
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden — access restricted to enrolled students, course instructor, or ADMIN
+        "404":
+          description: Course not found
+
+    patch:
+      tags:
+        - Courses
+      summary: Update a course
+      description: Only the course creator (instructor) or an ADMIN can update this course.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Node.js Masterclass (Updated)
+                description:
+                  type: string
+                  nullable: true
+                topicId:
+                  type: string
+                  format: uuid
+                price:
+                  type: number
+                  minimum: 0
+                  example: 59.99
+      responses:
+        "200":
+          description: Course updated
+        "400":
+          description: Validation error
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden — only course creator or ADMIN can edit
+        "404":
+          description: Course not found
+
+    delete:
+      tags:
+        - Courses
+      summary: Delete a course
+      description: Only the course creator (instructor) or an ADMIN can delete this course.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Course deleted
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden — only course creator or ADMIN can delete
+        "404":
+          description: Course not found
