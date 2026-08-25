@@ -21,13 +21,13 @@ export class User {
   @Column({ type: "text", nullable: true })
   bio!: string | null;
 
-  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP", name: 'created_at' })
   createdAt!: Date;
 
-  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP", name: 'updated_at' })
   updatedAt!: Date;
 
-  @DeleteDateColumn({ type: "timestamp", nullable: true })
+  @DeleteDateColumn({ type: "timestamp", nullable: true, name: 'deleted_at' })
   deletedAt!: Date | null;
 
   @OneToMany(() => Course, (course) => course.instructor)

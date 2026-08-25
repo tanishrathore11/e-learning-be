@@ -20,16 +20,16 @@ export class Lesson {
   @Column({ type: "text", nullable: true })
   content!: string | null;
 
-  @Column({ type: "text", nullable: true })
+  @Column({ type: "text", nullable: true, name: 'video_url' })
   videoUrl!: string | null;
 
   @Column({ type: "integer", nullable: true })
   position!: number | null;
 
-  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP", name: 'created_at' })
   createdAt!: Date;
 
-  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP", name: 'updated_at' })
   updatedAt!: Date;
 
   @OneToMany(() => Progress, (progress) => progress.lesson)

@@ -16,10 +16,10 @@ export class Enrollment {
   @JoinColumn({ name: "course_id" })
   course!: Relation<Course>;
 
-  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP", name: 'created_at' })
   createdAt!: Date;
 
-  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" })
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP", name: 'updated_at' })
   updatedAt!: Date;
 
   @OneToMany(() => Progress, (progress) => progress.enrollment)
