@@ -62,4 +62,9 @@ export const purchaseRepository = {
         });
         return purchases;
     },
+
+    async findPurchaseItemByCourseId(courseId: string) {
+        const repo = AppDataSource.getRepository(PurchaseItem);
+        return await repo.findOne({ where: { course: { id: courseId } } });
+    },
 };   

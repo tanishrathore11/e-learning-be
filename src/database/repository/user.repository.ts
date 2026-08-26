@@ -17,5 +17,10 @@ export const userRepository = {
     async findByEmail(email: string){
         const repo = this.getRepository();
         return await repo.findOne({ where: { email } });
+    },
+
+    async findById(id: string){
+        const repo = this.getRepository();
+        return await repo.findOne({ where: { id } });
     }
 }
