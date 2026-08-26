@@ -2,8 +2,8 @@ import { courseRepository } from "../database/repository/course.repository.js";
 import { topicRepository } from "../database/repository/topic.repository.js";
 import { enrollmentRepository } from "../database/repository/enrollment.repository.js";
 import { lessonProgressRepository } from "../database/repository/progress.repository.js";
-import { AppDataSource } from "../database/db-connection.js";
-import { User, PurchaseItem } from "../database/entities/index.js";
+import { userRepository } from "../database/repository/user.repository.js";
+import { purchaseRepository } from "../database/repository/purchase.repository.js";
 import { AppError } from "../utils/appError.js";
 import { CreateCourse } from "../type/types.js";
 
@@ -16,9 +16,7 @@ export const courseService = {
         }
 
         // Validate instructor exists and has the correct role
-        const instructor = await AppDataSource.getRepository(User).findOne({
-            where: { id: data.instructorId },
-        });
+        const instructor = await userRepository.findById(data.instructorId);
         if (!instructor) {
             throw new AppError("Instructor not found", 404);
         }
@@ -81,9 +79,7 @@ export const courseService = {
         }
 
         if (data.instructorId) {
-            const instructor = await AppDataSource.getRepository(User).findOne({
-                where: { id: data.instructorId },
-            });
+            const instructor = await userRepository.findById(data.instructorId);
             if (!instructor) {
                 throw new AppError("Instructor not found", 404);
             }
@@ -105,9 +101,7 @@ export const courseService = {
             throw new AppError("You are not authorized to delete this course", 403);
         }
 
-        const purchaseItem = await AppDataSource.getRepository(PurchaseItem).findOne({
-            where: { course: { id } },
-        });
+        const purchaseItem = await purchaseRepository.findPurchaseItemByCourseId(id);
         if (purchaseItem) {
             throw new AppError("Cannot delete course because it has already been purchased by students", 400);
         }
