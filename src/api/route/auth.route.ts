@@ -7,5 +7,6 @@ const router = Router();
 
 router.post("/register", authRateLimiter, validateRegister, authController.register);
 router.post("/login", authRateLimiter, validateLogin, authController.login);
+router.post("/instructor/register", authRateLimiter, validateRegister, authController.registerInstructor);
 
 export default router;

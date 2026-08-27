@@ -1,6 +1,7 @@
 import { CreateUser } from "../../type/types.js";
 import { AppDataSource } from "../db-connection.js"
 import { User } from "../entities/index.js"
+import { AppError } from "../../utils/appError.js";
 
 
 export const userRepository = {
@@ -28,5 +29,21 @@ export const userRepository = {
         const repo = this.getRepository();
         await repo.update(id, updateData);
         return await this.findById(id);
+    },
+
+    async createInstructorWithTransaction(userData: CreateUser){
+        return await AppDataSource.transaction(async (transactionalEntityManager) => {
+            const userRepo = transactionalEntityManager.getRepository(User);
+            const existing = await userRepo.findOne({ where: { email: userData.email } });
+            if (existing) {
+                throw new AppError("Email is already registered", 409);
+            }
+
+            const user = userRepo.create({
+                ...userData,
+                role: "INSTRUCTOR",
+            });
+            return await userRepo.save(user);
+        });
     }
 }
