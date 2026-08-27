@@ -1,9 +1,56 @@
 import { courseRepository } from "../database/repository/course.repository.js";
 import { enrollmentRepository } from "../database/repository/enrollment.repository.js";
 import { lessonProgressRepository } from "../database/repository/progress.repository.js";
+import { userRepository } from "../database/repository/user.repository.js";
 import { AppError } from "../utils/appError.js";
 
 export const dashboardService = {
+    async getAdminDashboard() {
+        const students = await userRepository.getRepository().find({
+            where: { role: "STUDENT" },
+            relations: { enrollments: true },
+        });
+
+        const instructors = await userRepository.getRepository().find({
+            where: { role: "INSTRUCTOR" },
+            relations: { courses: { enrollments: { user: true } } },
+        });
+
+        const studentList = students.map((student) => ({
+            id: student.id,
+            name: student.name,
+            email: student.email,
+            bio: student.bio,
+            courseCount: student.enrollments ? student.enrollments.length : 0,
+        }));
+
+        const instructorList = instructors.map((instructor) => {
+            const courses = instructor.courses || [];
+            const studentIds = new Set<string>();
+            for (const course of courses) {
+                if (course.enrollments) {
+                    for (const enrollment of course.enrollments) {
+                        if (enrollment.user) {
+                            studentIds.add(enrollment.user.id);
+                        }
+                    }
+                }
+            }
+            return {
+                id: instructor.id,
+                name: instructor.name,
+                email: instructor.email,
+                bio: instructor.bio,
+                courseCount: courses.length,
+                studentCount: studentIds.size,
+            };
+        });
+
+        return {
+            students: studentList,
+            instructors: instructorList,
+        };
+    },
     async getInstructorDashboard(instructorId: string) {
         const rows = await courseRepository.getInstructorDashboard(instructorId);
 
@@ -65,5 +112,8 @@ export const dashboardService = {
     },
     async markLessonCompleted(enrollmentId: string, lessonId: string) {
         return await lessonProgressRepository.markLessonCompleted(enrollmentId, lessonId);
+    },
+    async removeLessonCompleted(enrollmentId: string, lessonId: string) {
+        return await lessonProgressRepository.removeLessonCompleted(enrollmentId, lessonId);
     },
 };

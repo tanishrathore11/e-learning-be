@@ -19,9 +19,15 @@ export const courseRepository = {
         });
         return await repo.save(course);
     },
-    async findAll() {
+    async findAll(topicId?: string) {
         const repo = this.getRepository();
-        return await repo.find();
+        return await repo.find({
+            where: topicId ? { topic: { id: topicId } } : undefined,
+            relations: {
+                topic: true,
+                instructor: true,
+            }
+        });
     },
     async findCourseByIdWithDetails(id: string) {
         const repo = this.getRepository();

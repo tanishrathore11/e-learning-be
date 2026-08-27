@@ -26,8 +26,8 @@ export const courseService = {
         return await courseRepository.create(data);
     },
 
-    async getAllCourses() {
-        return await courseRepository.findAll();
+    async getAllCourses(topicId?: string) {
+        return await courseRepository.findAll(topicId);
     },
 
     async getCourseById(id: string, userId: string, userRole?: string) {

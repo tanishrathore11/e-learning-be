@@ -17,7 +17,10 @@ export const enrollmentRepository = {
                 },
             },
             relations: {
-                course: true,
+                course: {
+                    lessons: true,
+                    topic: true,
+                },
             },
         });
 

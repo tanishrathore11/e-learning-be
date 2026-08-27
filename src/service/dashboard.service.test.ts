@@ -2,10 +2,12 @@ import { dashboardService } from "./dashboard.service.js";
 import { courseRepository } from "../database/repository/course.repository.js";
 import { enrollmentRepository } from "../database/repository/enrollment.repository.js";
 import { lessonProgressRepository } from "../database/repository/progress.repository.js";
+import { userRepository } from "../database/repository/user.repository.js";
 
 jest.mock("../database/repository/course.repository.js");
 jest.mock("../database/repository/enrollment.repository.js");
 jest.mock("../database/repository/progress.repository.js");
+jest.mock("../database/repository/user.repository.js");
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -111,5 +113,68 @@ describe("dashboardService.markLessonCompleted", () => {
     const result = await dashboardService.markLessonCompleted("enrollment-1", "lesson-1");
     expect(result).toEqual(mockProgress);
     expect(lessonProgressRepository.markLessonCompleted).toHaveBeenCalledWith("enrollment-1", "lesson-1");
+  });
+});
+
+// -------------------------------------------------------------------
+// getAdminDashboard
+// -------------------------------------------------------------------
+describe("dashboardService.getAdminDashboard", () => {
+  it("should return student and instructor listings with correct course/student counts", async () => {
+    const mockStudents = [
+      { id: "stud-1", name: "S1", email: "s1@example.com", bio: "Bio 1", enrollments: [{}, {}] },
+      { id: "stud-2", name: "S2", email: "s2@example.com", bio: null, enrollments: [] }
+    ];
+
+    const mockInstructors = [
+      {
+        id: "inst-1",
+        name: "I1",
+        email: "i1@example.com",
+        bio: "Instructor 1",
+        courses: [
+          { enrollments: [{ user: { id: "stud-1" } }, { user: { id: "stud-2" } }] },
+          { enrollments: [{ user: { id: "stud-1" } }] }
+        ]
+      }
+    ];
+
+    const mockFind = jest.fn().mockImplementation((options) => {
+      if (options.where.role === "STUDENT") return Promise.resolve(mockStudents);
+      if (options.where.role === "INSTRUCTOR") return Promise.resolve(mockInstructors);
+      return Promise.resolve([]);
+    });
+
+    (userRepository.getRepository as jest.Mock).mockReturnValue({
+      find: mockFind
+    });
+
+    const result = await dashboardService.getAdminDashboard();
+
+    expect(result.students).toHaveLength(2);
+    expect(result.students[0]).toEqual({
+      id: "stud-1",
+      name: "S1",
+      email: "s1@example.com",
+      bio: "Bio 1",
+      courseCount: 2
+    });
+    expect(result.students[1]).toEqual({
+      id: "stud-2",
+      name: "S2",
+      email: "s2@example.com",
+      bio: null,
+      courseCount: 0
+    });
+
+    expect(result.instructors).toHaveLength(1);
+    expect(result.instructors[0]).toEqual({
+      id: "inst-1",
+      name: "I1",
+      email: "i1@example.com",
+      bio: "Instructor 1",
+      courseCount: 2,
+      studentCount: 2
+    });
   });
 });

@@ -73,7 +73,7 @@ describe("courseController.createCourse", () => {
 // -------------------------------------------------------------------
 describe("courseController.getAllCourses", () => {
   it("should return all courses with status 200", async () => {
-    const mockRequest = {} as Request;
+    const mockRequest = { query: {} } as unknown as Request;
 
     const mockCourses = [
       { id: "course-1", title: "Course A" },
@@ -93,7 +93,7 @@ describe("courseController.getAllCourses", () => {
   });
 
   it("should call next with an error if the service throws", async () => {
-    const mockRequest = {} as Request;
+    const mockRequest = { query: {} } as unknown as Request;
 
     const error = new Error("Something went wrong");
     (courseService.getAllCourses as jest.Mock).mockRejectedValue(error);

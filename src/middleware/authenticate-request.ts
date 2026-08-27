@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { config } from "../config/env.js";
 import { AppError } from "../utils/appError.js";
+import { userRepository } from "../database/repository/user.repository.js";
 
 interface JwtPayload {
   id: string;
@@ -11,9 +12,9 @@ interface JwtPayload {
 /**
  * Extracts and verifies the JWT from the Authorization header.
  * Attaches `{ id, role }` to `req.user` for downstream handlers.
- * Throws 401 if the token is missing or invalid.
+ * Throws 401 if the token is missing, invalid, or user doesn't exist.
  */
-export function authenticateRequest(req: Request, _res: Response, next: NextFunction): void {
+export async function authenticateRequest(req: Request, _res: Response, next: NextFunction): Promise<void> {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -24,6 +25,13 @@ export function authenticateRequest(req: Request, _res: Response, next: NextFunc
 
   try {
     const payload = jwt.verify(token, config.jwtSecret) as JwtPayload;
+    
+    // Verify user still exists in the database
+    const user = await userRepository.findById(payload.id);
+    if (!user) {
+      return next(new AppError("User associated with this token no longer exists", 401));
+    }
+
     req.user = { id: payload.id, role: payload.role };
     next();
   } catch {

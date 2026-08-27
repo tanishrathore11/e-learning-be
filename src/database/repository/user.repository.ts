@@ -22,5 +22,11 @@ export const userRepository = {
     async findById(id: string){
         const repo = this.getRepository();
         return await repo.findOne({ where: { id } });
+    },
+
+    async update(id: string, updateData: Partial<User>){
+        const repo = this.getRepository();
+        await repo.update(id, updateData);
+        return await this.findById(id);
     }
 }
