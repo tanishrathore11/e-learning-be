@@ -54,6 +54,24 @@ export const lessonProgressRepository = {
         });
 
         return await repo.save(progress);
-    }
+    },
 
+    async removeLessonCompleted(enrollmentId: string, lessonId: string) {
+        const repo = this.getRepository();
+
+        const existingProgress = await repo.findOne({
+            where: {
+                enrollment: {
+                    id: enrollmentId,
+                },
+                lesson: {
+                    id: lessonId,
+                },
+            },
+        });
+
+        if (existingProgress) {
+            await repo.remove(existingProgress);
+        }
+    }
 }

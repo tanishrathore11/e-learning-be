@@ -11,6 +11,8 @@ router.use(authenticateRequest);
 
 router.get("/instructor", authorizeRole("INSTRUCTOR", "ADMIN"), dashboardController.getInstructorDashboard);
 router.get("/student", authorizeRole("STUDENT"), dashboardController.getStudentDashboard);
+router.get("/admin", authorizeRole("ADMIN"), dashboardController.getAdminDashboard);
 router.post("/progress", progressRateLimiter, authorizeRole("STUDENT"), validateMarkProgress, dashboardController.markLessonCompleted);
+router.delete("/progress", progressRateLimiter, authorizeRole("STUDENT"), validateMarkProgress, dashboardController.removeLessonCompleted);
 
 export default router;

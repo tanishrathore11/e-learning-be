@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import apiRoutes from "./api/route/index.js";
 import { errorHandler } from "./middleware/error.js";
@@ -6,6 +7,9 @@ import { swaggerSpec } from "./config/swagger.js";
 import { generalApiRateLimiter } from "./middleware/rate-limiter.js";
 
 const app = express();
+
+// ─── CORS ────────────────────────────────────────────────────────────────────
+app.use(cors());
 
 // ─── Body parsing ────────────────────────────────────────────────────────────
 app.use(express.json());

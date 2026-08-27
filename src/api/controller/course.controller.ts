@@ -13,9 +13,10 @@ export const courseController = {
     }
   },
 
-  async getAllCourses(_req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getAllCourses(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const courses = await courseService.getAllCourses();
+      const topicId = req.query.topicId as string | undefined;
+      const courses = await courseService.getAllCourses(topicId);
       res.status(200).json({ success: true, data: courses });
     } catch (err) {
       next(err);
