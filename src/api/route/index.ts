@@ -7,6 +7,7 @@ import enrollmentRoutes from "./enrollment.route.js";
 import purchaseRoutes from "./purchase.route.js";
 import dashboardRoutes from "./dashboard.route.js";
 import userRoutes from "./user.route.js";
+import adminRoutes from "./admin.route.js";
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use("/enrollments", enrollmentRoutes);
 router.use("/purchases", purchaseRoutes);
 router.use("/dashboard", dashboardRoutes);
 router.use("/users", userRoutes);
+router.use("/admin", adminRoutes);
 
 export default router;

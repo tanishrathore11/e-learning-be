@@ -3,12 +3,13 @@ import jwt from "jsonwebtoken";
 import { authService } from "./auth.service.js";
 import { userRepository } from "../database/repository/user.repository.js";
 import { AppError } from "../utils/appError.js";
+import { emailService } from "../utils/email.js";
 
 // Mock external libraries and the repository
-// We do this so we never touch the real database, real hashing, or real JWT signing
 jest.mock("bcrypt");
 jest.mock("jsonwebtoken");
 jest.mock("../database/repository/user.repository.js");
+jest.mock("../utils/email.js");
 
 // Give jwt.sign a fake secret to work with
 jest.mock("../config/env.js", () => ({
@@ -134,5 +135,49 @@ describe("authService.login", () => {
     // Password must NOT be in the response
     expect(result.user).not.toHaveProperty("password");
     expect(result.user.email).toBe("john@example.com");
+  });
+});
+
+describe("authService.registerInstructorApproval", () => {
+  it("should throw 409 AppError if email is already registered", async () => {
+    (userRepository.findByEmail as jest.Mock).mockResolvedValue({
+      id: "user-1",
+      email: "instructor@example.com",
+    });
+
+    await expect(
+      authService.registerInstructorApproval({ name: "Inst", email: "instructor@example.com", password: "pass" })
+    ).rejects.toThrow("Email is already registered");
+  });
+
+  it("should generate an approval token and send email to admin", async () => {
+    (userRepository.findByEmail as jest.Mock).mockResolvedValue(null);
+    (bcrypt.hash as jest.Mock).mockResolvedValue("hashed-pass");
+    (jwt.sign as jest.Mock).mockReturnValue("fake-approval-token");
+
+    const result = await authService.registerInstructorApproval({
+      name: "Inst",
+      email: "instructor@example.com",
+      password: "pass",
+    });
+
+    expect(bcrypt.hash).toHaveBeenCalledWith("pass", 10);
+    expect(jwt.sign).toHaveBeenCalledWith(
+      {
+        name: "Inst",
+        email: "instructor@example.com",
+        passwordHash: "hashed-pass",
+        role: "INSTRUCTOR",
+        type: "INSTRUCTOR_APPROVAL",
+      },
+      "test-secret"
+    );
+    expect(emailService.sendAdminApprovalEmail).toHaveBeenCalledWith({
+      instructorName: "Inst",
+      instructorEmail: "instructor@example.com",
+      approvalToken: "fake-approval-token",
+    });
+    expect(result.success).toBe(true);
+    expect(result.message).toBe("Instructor registration submitted for admin approval.");
   });
 });
