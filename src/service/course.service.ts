@@ -4,7 +4,7 @@ import { enrollmentRepository } from "../database/repository/enrollment.reposito
 import { lessonProgressRepository } from "../database/repository/progress.repository.js";
 import { userRepository } from "../database/repository/user.repository.js";
 import { purchaseRepository } from "../database/repository/purchase.repository.js";
-import { AppError } from "../utils/appError.js";
+import { AppError } from "../util/appError.js";
 import { CreateCourse } from "../type/types.js";
 
 export const courseService = {

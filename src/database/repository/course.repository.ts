@@ -1,6 +1,6 @@
 import { CreateCourse } from "../../type/types.js";
 import { AppDataSource } from "../db-connection.js"
-import { Course } from "../entities/index.js"
+import { Course } from "../model/index.js"
 
 
 export const courseRepository = {

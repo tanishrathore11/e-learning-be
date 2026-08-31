@@ -1,5 +1,5 @@
 import { AppDataSource } from "../db-connection.js";
-import { Enrollment } from "../entities/Enrollment.entity.js";
+import { Enrollment } from "../model/enrollment.model.js";
 
 
 

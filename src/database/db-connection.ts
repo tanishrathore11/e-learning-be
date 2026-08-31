@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { Course, Enrollment, Lesson, Progress, PurchaseItem, Purchases, Topic, User } from './entities/index.js';
-import { config } from '../config/env.js';
+import { Course, Enrollment, Lesson, Progress, PurchaseItem, Purchases, Topic, User } from './model/index.js';
+import { config } from '../config/secrets.js';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',

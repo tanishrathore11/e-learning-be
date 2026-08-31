@@ -1,6 +1,6 @@
 import { CreatePurchaseRepoInput } from "../../type/types.js";
 import { AppDataSource } from "../db-connection.js";
-import { PurchaseItem, Purchases, Enrollment } from "../entities/index.js";
+import { PurchaseItem, Purchases, Enrollment } from "../model/index.js";
 
 
 export const purchaseRepository = {

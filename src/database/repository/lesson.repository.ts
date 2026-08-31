@@ -1,14 +1,14 @@
 import { LessonData } from "../../type/types.js";
 import { AppDataSource } from "../db-connection.js"
-import { Lesson } from "../entities/index.js"
+import { Lesson } from "../model/index.js"
 
 
 export const lessonRepository = {
-    getRepository(){
+    getRepository() {
         return AppDataSource.getRepository(Lesson);
     },
 
-    async addLesson(lessonData: LessonData){
+    async addLesson(lessonData: LessonData) {
         const repo = this.getRepository();
         const lesson = repo.create({
             title: lessonData.title,
@@ -21,14 +21,14 @@ export const lessonRepository = {
 
         return await repo.save(lesson);
     },
-    async findLessonsByCourseId(courseId: string){
+    async findLessonsByCourseId(courseId: string) {
         const repo = this.getRepository();
         return await repo.find({
             where: { course: { id: courseId } },
             order: { position: "ASC" }
         });
     },
-    async findById(id: string){
+    async findById(id: string) {
         const repo = this.getRepository();
         return await repo.findOne({
             where: { id },
@@ -56,7 +56,7 @@ export const lessonRepository = {
         await repo.update(id, updateData);
         return await repo.findOne({ where: { id } });
     },
-    async deleteLesson(id: string){
+    async deleteLesson(id: string) {
         const repo = this.getRepository();
         return await repo.delete(id);
     }

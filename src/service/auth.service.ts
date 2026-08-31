@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { userRepository } from "../database/repository/user.repository.js";
-import { config } from "../config/env.js";
+import { config } from "../config/secrets.js";
 import { CreateUser } from "../type/types.js";
-import { AppError } from "../utils/appError.js";
-import { emailService } from "../utils/email.js";
+import { AppError } from "../util/appError.js";
+import { emailService } from "../util/mailer.js";
 
 export const authService = {
     async register(data: CreateUser) {
@@ -37,6 +37,14 @@ export const authService = {
             throw new AppError("Invalid email or password", 401);
         }
 
+        if (user.approvalStatus === "PENDING") {
+            throw new AppError("Your account is pending admin approval.", 403);
+        }
+
+        if (user.approvalStatus === "REJECTED") {
+            throw new AppError("Your instructor registration request was rejected by an administrator.", 403);
+        }
+
         const token = jwt.sign({ id: user.id, role: user.role }, config.jwtSecret);
 
         const { password: _, ...userWithoutPassword } = user;
@@ -46,33 +54,37 @@ export const authService = {
     async registerInstructorApproval(data: CreateUser) {
         const existing = await userRepository.findByEmail(data.email);
         if (existing) {
+            if (existing.approvalStatus === "REJECTED") {
+                throw new AppError("Your instructor registration request was rejected.", 403);
+            }
+            if (existing.approvalStatus === "PENDING") {
+                throw new AppError("Your instructor registration request is already pending approval.", 400);
+            }
             throw new AppError("Email is already registered", 409);
         }
 
         const hashedPassword = await bcrypt.hash(data.password!, 10);
 
-        // Sign JWT containing name, email, passwordHash, role, type
-        const approvalToken = jwt.sign(
-            {
-                name: data.name,
-                email: data.email,
-                passwordHash: hashedPassword,
-                role: "INSTRUCTOR",
-                type: "INSTRUCTOR_APPROVAL",
-            },
-            config.jwtSecret
-        );
-
-        // Send email to ADMIN
-        await emailService.sendAdminApprovalEmail({
-            instructorName: data.name,
-            instructorEmail: data.email,
-            approvalToken,
+        const user = await userRepository.createUser({
+            name: data.name,
+            email: data.email,
+            password: hashedPassword,
+            role: "INSTRUCTOR",
+            approvalStatus: "PENDING",
+            bio: data.bio,
         });
 
+        // Send notification email to ADMIN
+        await emailService.sendAdminApprovalEmail({
+            instructorName: user.name,
+            instructorEmail: user.email,
+        });
+
+        const { password: _, ...userWithoutPassword } = user;
         return {
             success: true,
             message: "Instructor registration submitted for admin approval.",
+            user: userWithoutPassword,
         };
     },
 };

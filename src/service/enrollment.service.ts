@@ -1,5 +1,5 @@
 import { enrollmentRepository } from "../database/repository/enrollment.repository.js";
-import { AppError } from "../utils/appError.js";
+import { AppError } from "../util/appError.js";
 
 export const enrollmentService = {
     async getMyEnrollments(userId: string) {

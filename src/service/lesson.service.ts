@@ -1,6 +1,6 @@
 import { lessonRepository } from "../database/repository/lesson.repository.js";
 import { courseRepository } from "../database/repository/course.repository.js";
-import { AppError } from "../utils/appError.js";
+import { AppError } from "../util/appError.js";
 import { LessonData } from "../type/types.js";
 
 export const lessonService = {
