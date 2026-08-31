@@ -2,7 +2,7 @@ import { courseRepository } from "../database/repository/course.repository.js";
 import { enrollmentRepository } from "../database/repository/enrollment.repository.js";
 import { lessonProgressRepository } from "../database/repository/progress.repository.js";
 import { userRepository } from "../database/repository/user.repository.js";
-import { AppError } from "../utils/appError.js";
+import { AppError } from "../util/appError.js";
 
 export const dashboardService = {
     async getAdminDashboard() {
@@ -12,7 +12,7 @@ export const dashboardService = {
         });
 
         const instructors = await userRepository.getRepository().find({
-            where: { role: "INSTRUCTOR" },
+            where: { role: "INSTRUCTOR", approvalStatus: "APPROVED" },
             relations: { courses: { enrollments: { user: true } } },
         });
 

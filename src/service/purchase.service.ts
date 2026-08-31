@@ -1,7 +1,7 @@
 import { purchaseRepository } from "../database/repository/purchase.repository.js";
 import { courseRepository } from "../database/repository/course.repository.js";
 import { enrollmentRepository } from "../database/repository/enrollment.repository.js";
-import { AppError } from "../utils/appError.js";
+import { AppError } from "../util/appError.js";
 import { CreatePurchaseRepoInput } from "../type/types.js";
 
 export const purchaseService = {

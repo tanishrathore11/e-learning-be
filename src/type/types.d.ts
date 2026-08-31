@@ -5,6 +5,7 @@ export interface CreateUser {
   email: string;
   password?: string;
   role?: "ADMIN" | "INSTRUCTOR" | "STUDENT";
+  approvalStatus?: "PENDING" | "APPROVED" | "REJECTED";
   bio?: string | null;
 }
 

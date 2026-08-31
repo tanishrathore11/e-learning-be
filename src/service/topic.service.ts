@@ -1,5 +1,5 @@
 import { topicRepository } from "../database/repository/topic.repository.js";
-import { AppError } from "../utils/appError.js";
+import { AppError } from "../util/appError.js";
 import { CreateTopic } from "../type/types.js";
 
 export const topicService = {

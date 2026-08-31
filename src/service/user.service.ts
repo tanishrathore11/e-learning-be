@@ -1,5 +1,5 @@
 import { userRepository } from "../database/repository/user.repository.js";
-import { AppError } from "../utils/appError.js";
+import { AppError } from "../util/appError.js";
 
 export const userService = {
     async getUserProfile(id: string) {

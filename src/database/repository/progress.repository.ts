@@ -1,5 +1,5 @@
 import { AppDataSource } from "../db-connection.js";
-import { Progress } from "../entities/Progress.entity.js";
+import { Progress } from "../model/progress.model.js";
 
 
 export const lessonProgressRepository = {

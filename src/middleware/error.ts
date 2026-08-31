@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
-import { AppError } from "../utils/appError.js";
+import { AppError } from "../util/appError.js";
+import { logger } from "../util/logger.js";
 
 /**
  * Global Express error-handling middleware.
@@ -42,7 +43,7 @@ export function errorHandler(
   }
 
   // ── Unknown / programming errors ───────────────────────────────────────────
-  console.error("Unhandled error:", err);
+  logger.error({ err }, "Unhandled error");
 
   res.status(500).json({
     success: false,

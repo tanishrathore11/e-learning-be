@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { config } from "../config/env.js";
-import { AppError } from "../utils/appError.js";
+import { config } from "../config/secrets.js";
+import { AppError } from "../util/appError.js";
 import { userRepository } from "../database/repository/user.repository.js";
 
 interface JwtPayload {
@@ -25,7 +25,7 @@ export async function authenticateRequest(req: Request, _res: Response, next: Ne
 
   try {
     const payload = jwt.verify(token, config.jwtSecret) as JwtPayload;
-    
+
     // Verify user still exists in the database
     const user = await userRepository.findById(payload.id);
     if (!user) {
