@@ -12,7 +12,7 @@ jest.mock("../../../src/database/repository/user.repository.js");
 jest.mock("../../../src/util/mailer.js");
 
 // Give jwt.sign a fake secret to work with
-jest.mock("../../../src/config/env.js", () => ({
+jest.mock("../../../src/config/secrets.js", () => ({
   config: { jwtSecret: "test-secret" },
 }));
 
